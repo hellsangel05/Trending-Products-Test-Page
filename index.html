@@ -18,8 +18,8 @@
   <div id="results"><h2>Current Votes</h2><div id="voteCounts">Loading...</div></div>
 
 <script>
-  const pollUrl = "https://aichatbot27.app.n8n.cloud/webhook-test/poll";
-  const voteUrl = "https://aichatbot27.app.n8n.cloud/webhook-test/vote";
+  const pollUrl = "https://api.allorigins.win/raw?url=" + encodeURIComponent("https://aichatbot27.app.n8n.cloud/webhook-test/poll");
+  const resultsUrl = "https://api.allorigins.win/raw?url=" + encodeURIComponent("https://aichatbot27.app.n8n.cloud/webhook-test/vote");
   const resultsUrl = "https://aichatbot27.app.n8n.cloud/webhook-test/results";
 
   async function fetchProducts() {
