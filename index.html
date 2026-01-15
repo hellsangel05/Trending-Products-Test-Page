@@ -4,97 +4,146 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Trending Products Voting</title>
+
 <style>
-  body { font-family: Arial, sans-serif; padding: 20px; max-width: 600px; margin: auto; }
-  .product { border: 1px solid #ddd; padding: 10px; margin-bottom: 15px; display: flex; align-items: center; }
-  .product img { max-width: 80px; margin-right: 15px; }
-  .product button { margin-left: auto; padding: 8px 12px; }
-  #results { margin-top: 30px; }
+  body {
+    font-family: Arial, sans-serif;
+    padding: 20px;
+    max-width: 600px;
+    margin: auto;
+  }
+  .product {
+    border: 1px solid #ddd;
+    padding: 10px;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+  }
+  .product img {
+    max-width: 80px;
+    margin-right: 15px;
+  }
+  .product button {
+    margin-left: auto;
+    padding: 8px 12px;
+  }
+  #results {
+    margin-top: 30px;
+  }
 </style>
 </head>
+
 <body>
-  <h1>Vote for Trending Products</h1>
-  <div id="products">Loading products...</div>
-  <div id="results"><h2>Current Votes</h2><div id="voteCounts">Loading...</div></div>
+<h1>Vote for Trending Products</h1>
+
+<div id="products">Loading products...</div>
+
+<div id="results">
+  <h2>Current Votes</h2>
+  <div id="voteCounts">Loading...</div>
+</div>
 
 <script>
-  const pollUrl = "https://api.allorigins.win/raw?url=" + encodeURIComponent("https://aichatbot27.app.n8n.cloud/webhook-test/poll");
-  const resultsUrl = "https://api.allorigins.win/raw?url=" + encodeURIComponent("https://aichatbot27.app.n8n.cloud/webhook-test/vote");
-  const resultsUrl = "https://aichatbot27.app.n8n.cloud/webhook-test/results";
+  // 🔹 DIRECT n8n endpoints (NO CORS proxy)
+  const productsUrl = "https://aichatbot27.app.n8n.cloud/webhook-test/poll";
+  const voteUrl     = "https://aichatbot27.app.n8n.cloud/webhook-test/vote";
+  const resultsUrl  = "https://aichatbot27.app.n8n.cloud/webhook-test/results";
 
   async function fetchProducts() {
-    const res = await fetch(pollUrl);
-    if (!res.ok) throw new Error('Failed to fetch products');
+    const res = await fetch(productsUrl);
+    if (!res.ok) throw new Error("Failed to fetch products");
     return await res.json();
   }
 
   async function fetchResults() {
     const res = await fetch(resultsUrl);
-    if (!res.ok) throw new Error('Failed to fetch results');
+    if (!res.ok) throw new Error("Failed to fetch results");
     return await res.json();
   }
 
   async function sendVote(productId) {
-    const payload = { product_id: productId, voter_id: generateVoterId() };
+    const payload = {
+      product_id: productId,
+      voter_id: generateVoterId()
+    };
+
     const res = await fetch(voteUrl, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload),
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
     });
-    if (!res.ok) throw new Error('Failed to send vote');
-    alert('Thanks for voting!');
+
+    if (!res.ok) throw new Error("Failed to send vote");
+
+    alert("Thanks for voting!");
     await loadResults();
   }
 
   function generateVoterId() {
-    // Simple unique ID per user (for demo), stored in localStorage
-    let id = localStorage.getItem('voterId');
+    let id = localStorage.getItem("voterId");
     if (!id) {
-      id = 'voter-' + Math.random().toString(36).substr(2, 9);
-      localStorage.setItem('voterId', id);
+      id = "voter-" + Math.random().toString(36).slice(2, 10);
+      localStorage.setItem("voterId", id);
     }
     return id;
   }
 
   async function loadResults() {
     const tally = await fetchResults();
-    const resultsDiv = document.getElementById('voteCounts');
-    if (Object.keys(tally).length === 0) {
-      resultsDiv.textContent = 'No votes yet.';
+    const resultsDiv = document.getElementById("voteCounts");
+
+    if (!tally || Object.keys(tally).length === 0) {
+      resultsDiv.textContent = "No votes yet.";
       return;
     }
-    let html = '<ul>';
+
+    let html = "<ul>";
     for (const [productId, count] of Object.entries(tally)) {
-      html += `<li>Product ID ${productId}: ${count} vote(s)</li>`;
+      html += `<li>Product ${productId}: ${count} vote(s)</li>`;
     }
-    html += '</ul>';
+    html += "</ul>";
+
     resultsDiv.innerHTML = html;
   }
 
   async function loadProducts() {
-    const productsDiv = document.getElementById('products');
+    const productsDiv = document.getElementById("products");
+
     try {
       const products = await fetchProducts();
-      if (!products.length) {
-        productsDiv.textContent = 'No products found.';
+
+      if (!products || products.length === 0) {
+        productsDiv.textContent = "No products found.";
         return;
       }
-      productsDiv.innerHTML = '';
+
+      productsDiv.innerHTML = "";
+
       products.forEach(p => {
-        const div = document.createElement('div');
-        div.className = 'product';
+        const div = document.createElement("div");
+        div.className = "product";
         div.innerHTML = `
           <img src="${p.image_url}" alt="${p.name}" />
-          <div><strong>${p.name}</strong><br/><a href="${p.url}" target="_blank">View product</a></div>
+          <div>
+            <strong>${p.name}</strong><br />
+            <a href="${p.url}" target="_blank">View product</a>
+          </div>
           <button onclick="sendVote(${p.id})">Vote</button>
         `;
         productsDiv.appendChild(div);
       });
+
       await loadResults();
-    } catch(e) {
-      productsDiv.textContent = 'Failed to load products: ' + e.message;
+    } catch (err) {
+      productsDiv.textContent = "Failed to load products: " + err.message;
     }
   }
+
+  // 🚀 Start app
+  loadProducts();
+</script>
+</body>
+</html>
 
   window.onload = loadProducts;
 </script>
