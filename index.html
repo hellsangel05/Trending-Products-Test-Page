@@ -89,22 +89,26 @@ const resultsUrl  = "https://aichatbot27.app.n8n.cloud/webhook/results";
     return id;
   }
 
-  async function loadResults() {
-    const tally = await fetchResults();
-    const resultsDiv = document.getElementById("voteCounts");
+async function loadResults() {
+  const tally = await fetchResults();
+  const resultsDiv = document.getElementById('voteCounts');
 
-    if (!tally || Object.keys(tally).length === 0) {
-      resultsDiv.textContent = "No votes yet.";
-      return;
-    }
+  if (!tally || Object.keys(tally).length === 0) {
+    resultsDiv.textContent = 'No votes yet.';
+    return;
+  }
 
-    let html = "<ul>";
-    for (const [productId, count] of Object.entries(tally)) {
-      html += `<li>Product ${productId}: ${count} vote(s)</li>`;
-    }
-    html += "</ul>";
+  let html = '<ul>';
+  for (const [productId, value] of Object.entries(tally)) {
+    // unwrap count if it's an object with a count property
+    const count = (typeof value === 'object' && value !== null) ? (value.count ?? value) : value;
+    html += `<li>Product ${productId}: ${count} vote(s)</li>`;
+  }
+  html += '</ul>';
 
-    resultsDiv.innerHTML = html;
+  resultsDiv.innerHTML = html;
+}
+
   }
 
   async function loadProducts() {
