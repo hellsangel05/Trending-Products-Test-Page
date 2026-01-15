@@ -45,9 +45,10 @@
 
 <script>
   // 🔹 DIRECT n8n endpoints (NO CORS proxy)
-  const productsUrl = "https://aichatbot27.app.n8n.cloud/webhook-test/poll";
-  const voteUrl     = "https://aichatbot27.app.n8n.cloud/webhook-test/vote";
-  const resultsUrl  = "https://aichatbot27.app.n8n.cloud/webhook-test/results";
+  const productsUrl = "https://aichatbot27.app.n8n.cloud/webhook/poll";
+const voteUrl     = "https://aichatbot27.app.n8n.cloud/webhook/vote";
+const resultsUrl  = "https://aichatbot27.app.n8n.cloud/webhook/results";
+
 
   async function fetchProducts() {
     const res = await fetch(productsUrl);
